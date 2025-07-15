@@ -1,13 +1,49 @@
-<!-- trigger rebuild -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tokopedia Shortlink Converter</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    input, button, textarea { width: 100%; margin-top: 10px; padding: 10px; font-size: 1em; }
+    button { background: green; color: white; border: none; cursor: pointer; }
+    h1 { color: #2b9348; }
+  </style>
 </head>
 <body>
-  <h1>Halo Tons 👋</h1>
-  <p>Ini halaman awal converter link Tokopedia kamu. Yuk kita hidupkan!</p>
+  <h1>Tokopedia Shortlink Converter</h1>
+  <p>Tempel link pendek Tokopedia dari TikTok (contoh: <code>https://vt.tokopedia.com/t/xxxxxx</code>)</p>
+
+  <input id="shortlink" placeholder="Tempel link pendek di sini..." />
+  <button onclick="convertLink()">Konversi Sekarang</button>
+
+  <p><strong>Hasil Link Panjang:</strong></p>
+  <textarea id="longlink" readonly rows="2" placeholder="Link panjang akan muncul di sini..."></textarea>
+
+  <script>
+    function convertLink() {
+      const short = document.getElementById("shortlink").value.trim();
+      if (!short) {
+        alert("Masukkan link dulu ya!");
+        return;
+      }
+
+      fetch(short, { method: "GET", redirect: "follow" })
+        .then(response => {
+          const finalURL = response.url;
+          const productId = finalURL.match(/product\/(\d+)/);
+          if (productId && productId[1]) {
+            const longLink = `https://shop-id.tokopedia.com/view/product/${productId[1]}`;
+            document.getElementById("longlink").value = longLink;
+          } else {
+            document.getElementById("longlink").value = "Gagal: ID produk tidak ditemukan.";
+          }
+        })
+        .catch(err => {
+          document.getElementById("longlink").value = "Gagal: " + err.message;
+        });
+    }
+  </script>
 </body>
 </html>
